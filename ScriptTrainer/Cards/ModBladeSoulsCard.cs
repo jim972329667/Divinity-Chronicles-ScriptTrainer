@@ -16,7 +16,6 @@ namespace ScriptTrainer.Cards
             Rarity = Rarity.RARE;
             //RARE,COMMON,UNCOMMON
             EnergyCost = 1;
-            ImageAssetPath = "@external_3227332234:Data/Cards/card.jpg";
         }
         public override void OnDowngrade()
         {
@@ -28,8 +27,8 @@ namespace ScriptTrainer.Cards
         }
         public override string GetDisplayName()
         {
-            if (Values.ContainsKey("DisplayName"))
-                return Values["DisplayName"].ToString();
+            if (CardInfo != null && !String.IsNullOrEmpty(CardInfo.CardDisplayName))
+                return CardInfo.CardDisplayName;
             return base.GetDisplayName();
         }
 

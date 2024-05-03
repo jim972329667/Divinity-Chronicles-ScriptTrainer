@@ -270,6 +270,45 @@ namespace ScriptTrainer
             EngineWrapperUnity.Get().PickCardsFromDeckForSummonNPC(1, cardSelectedCallback);
            
         }
+
+        public static void BannedCards(int count)
+        {
+            Player player = Game.Get().GetPlayer();
+            List<Card> list = new List<Card>(player.CardPool.GetCards(player.Alignment).Values);
+            List<Card> toPick = new List<Card>();
+            foreach (Card card in list)
+            {
+                if (card.Rarity != Rarity.STARTER)
+                {
+                    toPick.Add(card);
+                }
+            }
+            CardsCallback callback = delegate (List<Card> picked)
+            {
+                if (picked.Count == 0)
+                {
+                    return;
+                }
+                string text = "";
+                foreach (Card card2 in picked)
+                {
+                    text = text + "[" + card2.GetDisplayName() + "]";
+                }
+                foreach (Card card3 in picked)
+                {
+                    player.BannedCards.Add(card3.GetType());
+                }
+                List<Rarity> rarities = new List<Rarity>
+                {
+                    Rarity.COMMON,
+                    Rarity.UNCOMMON,
+                    Rarity.RARE
+                };
+                toPick.Sort((Card card0, Card card1) => rarities.IndexOf(card0.Rarity).CompareTo(rarities.IndexOf(card1.Rarity)));
+                EngineWrapper.Get().ShowAlertMessage(string.Format(EngineWrapper.Get().GetLocalizedString("Event/IDS_EVENT_START_CHOICE15_2"), text), null, 5f, false);
+            };
+            EngineWrapper.Get().PickCards(toPick, count, "选择禁止的卡牌", callback, null, null, false);
+        }
         #region[冥想卡牌]
         public static void MeditateCard()
         {
