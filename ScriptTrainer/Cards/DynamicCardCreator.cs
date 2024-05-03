@@ -54,6 +54,7 @@ namespace ScriptTrainer.Cards
             {"Charmed","诱惑"},
             {"Strangled","绞杀"}
         };
+
         public static List<string> CardTypes = new List<string>()
         {
             "JTW.Wukong",
@@ -205,33 +206,32 @@ namespace ScriptTrainer.Cards
             {
                 return null;
             }
-
-            int.TryParse(line[1], out int intValue);
-            float.TryParse(line[1], out float floatValue);
-
-            ATCombat action = null;
             string actionName = $"{line[0]}_{actionList.GetActionCount()}";
+
+            ModCardValue cardValue = new ModCardValue(line[1]);
+            ATCombat action = null;
+            
             switch (line[0])
             {
                 case "Attack":
                     var Attack = actionList.AddAction<ATAttack>(actionName, null);
-                    Attack.Damage = intValue;
+                    Attack.Damage = cardValue.IntValue;
                     Attack.DamageType = "Pierce";
                     action = Attack;
                     break;
                 case "Block":
                     var Block = actionList.AddAction<ATBlock>(actionName, null);
-                    Block.BlockValue = intValue;
+                    Block.BlockValue = cardValue.IntValue;
                     action = Block;
                     break;
                 case "DrawCards":
                     var DrawCards = actionList.AddAction<ATDrawCards>(actionName, null);
-                    DrawCards.Count = intValue;
+                    DrawCards.Count = cardValue.IntValue;
                     action = DrawCards;
                     break;
                 case "ChangeHP":
                     var ChangeHP = actionList.AddAction<ATChangeHPs>(actionName, null);
-                    ChangeHP.Change = intValue;
+                    ChangeHP.Change = cardValue.IntValue;
                     ChangeHP.PreFunc = delegate (DV.Action _action)
                     {
                         ChangeHP.Source = CombatAction.GetCurrentSource().GenerateDataSource();
@@ -240,7 +240,7 @@ namespace ScriptTrainer.Cards
                     break;
                 case "ChangeEnergy":
                     var ChangeEnergy = actionList.AddAction<ATChangeEnergy>(actionName, null);
-                    ChangeEnergy.Change = intValue;
+                    ChangeEnergy.Change = cardValue.IntValue;
                     ChangeEnergy.PreFunc = delegate (DV.Action _action)
                     {
                         ChangeEnergy.Source = CombatAction.GetCurrentSource().GenerateDataSource();
@@ -250,18 +250,18 @@ namespace ScriptTrainer.Cards
                 case "Regeneration"://回复
                     var Regeneration = actionList.AddAction<ATAddStatus>(actionName, null);
                     var Statu = new STRegeneration();
-                    Statu.Count = intValue;
-                    if(intValue > Statu.Cap)
-                        Statu.Cap = intValue;
+                    Statu.Count = cardValue.IntValue;
+                    if(cardValue.IntValue > Statu.Cap)
+                        Statu.Cap = cardValue.IntValue;
                     Regeneration.Status = Statu;
                     action = Regeneration;
                     break;
                 case "LivingArmor"://活体护甲
                     var LivingArmor = actionList.AddAction<ATAddStatus>(actionName, null);
                     var Statu2 = new STLivingArmor();
-                    Statu2.Count = intValue;
-                    if (intValue > Statu2.Cap)
-                        Statu2.Cap = intValue;
+                    Statu2.Count = cardValue.IntValue;
+                    if (cardValue.IntValue > Statu2.Cap)
+                        Statu2.Cap = cardValue.IntValue;
                     LivingArmor.Status = Statu2;
                     action = LivingArmor;
                     break;
@@ -269,7 +269,7 @@ namespace ScriptTrainer.Cards
                     var Evasion = actionList.AddAction<ATAddStatus>(actionName, null);
                     Evasion.Status = new STEvasion
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Evasion;
                     break;
@@ -277,7 +277,7 @@ namespace ScriptTrainer.Cards
                     var Blessed = actionList.AddAction<ATAddStatus>(actionName, null);
                     Blessed.Status = new STBlessed
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Blessed;
                     break;
@@ -285,7 +285,7 @@ namespace ScriptTrainer.Cards
                     var Flying = actionList.AddAction<ATAddStatus>(actionName, null);
                     Flying.Status = new STFlying
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Flying;
                     break;
@@ -293,7 +293,7 @@ namespace ScriptTrainer.Cards
                     var InvinciblePerDamage = actionList.AddAction<ATAddStatus>(actionName, null);
                     InvinciblePerDamage.Status = new STInvinciblePerDamage
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = InvinciblePerDamage;
                     break;
@@ -301,7 +301,7 @@ namespace ScriptTrainer.Cards
                     var Invisible = actionList.AddAction<ATAddStatus>(actionName, null);
                     Invisible.Status = new STInvisible
                     {
-                        Length = intValue
+                        Length = cardValue.IntValue
                     };
                     action = Invisible;
                     break;
@@ -309,7 +309,7 @@ namespace ScriptTrainer.Cards
                     var Artifact = actionList.AddAction<ATAddStatus>(actionName, null);
                     Artifact.Status = new STArtifact
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Artifact;
                     break;
@@ -317,7 +317,7 @@ namespace ScriptTrainer.Cards
                     var Strength = actionList.AddAction<ATAddStatus>(actionName, null);
                     Strength.Status = new STStrength
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Strength;
                     break;
@@ -325,7 +325,7 @@ namespace ScriptTrainer.Cards
                     var Constitution = actionList.AddAction<ATAddStatus>(actionName, null);
                     Constitution.Status = new STConstitution
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Constitution;
                     break;
@@ -333,7 +333,7 @@ namespace ScriptTrainer.Cards
                     var Poison = actionList.AddAction<ATAddStatus>(actionName, null);
                     Poison.Status = new STPoison
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Poison;
                     break;
@@ -341,7 +341,7 @@ namespace ScriptTrainer.Cards
                     var Bleeding = actionList.AddAction<ATAddStatus>(actionName, null);
                     Bleeding.Status = new STBleeding
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Bleeding;
                     break;
@@ -349,7 +349,7 @@ namespace ScriptTrainer.Cards
                     var Burning = actionList.AddAction<ATAddStatus>(actionName, null);
                     Burning.Status = new STBurning
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Burning;
                     break;
@@ -357,7 +357,7 @@ namespace ScriptTrainer.Cards
                     var Wet = actionList.AddAction<ATAddStatus>(actionName, null);
                     Wet.Status = new STWet
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Wet;
                     break;
@@ -365,7 +365,7 @@ namespace ScriptTrainer.Cards
                     var Rupture = actionList.AddAction<ATAddStatus>(actionName, null);
                     Rupture.Status = new STRupture
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Rupture;
                     break;
@@ -373,7 +373,7 @@ namespace ScriptTrainer.Cards
                     var Sleeping = actionList.AddAction<ATAddStatus>(actionName, null);
                     Sleeping.Status = new STSleeping
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Sleeping;
                     break;
@@ -381,7 +381,7 @@ namespace ScriptTrainer.Cards
                     var Cursed = actionList.AddAction<ATAddStatus>(actionName, null);
                     Cursed.Status = new STCursed
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
                     action = Cursed;
                     break;
@@ -392,7 +392,7 @@ namespace ScriptTrainer.Cards
                     break;
                 case "Blind"://失明
                     var Blind = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Blind.Status = new STBlind() { Length = intValue };
+                    Blind.Status = new STBlind() { Length = cardValue.IntValue };
                     action = Blind;
                     break;
                 case "Shocked"://震惊
@@ -402,27 +402,27 @@ namespace ScriptTrainer.Cards
                     break;
                 case "Freezing"://冰冻
                     var Freezing = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Freezing.Status = new STFreezing() { Length = intValue };
+                    Freezing.Status = new STFreezing() { Length = cardValue.IntValue };
                     action = Freezing;
                     break;
                 case "Weak"://虚弱
                     var Weak = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Weak.Status = new STWeak() { Length = intValue };
+                    Weak.Status = new STWeak() { Length = cardValue.IntValue };
                     action = Weak;
                     break;
                 case "Frail"://脆弱
                     var Frail = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Frail.Status = new STFrail() { Length = intValue };
+                    Frail.Status = new STFrail() { Length = cardValue.IntValue };
                     action = Frail;
                     break;
                 case "Vulnerable"://易伤
                     var Vulnerable = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Vulnerable.Status = new STVulnerable() { Length = intValue };
+                    Vulnerable.Status = new STVulnerable() { Length = cardValue.IntValue };
                     action = Vulnerable;
                     break;
                 case "Confused"://困惑
                     var Confused = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Confused.Status = new STConfused() { Length = intValue };
+                    Confused.Status = new STConfused() { Length = cardValue.IntValue };
                     action = Confused;
                     break;
                 case "Stunned"://眩晕
@@ -432,36 +432,36 @@ namespace ScriptTrainer.Cards
                     break;
                 case "Apparition"://凶蚀
                     var Apparition = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Apparition.Status = new STApparition() { Count = intValue };
+                    Apparition.Status = new STApparition() { Count = cardValue.IntValue };
                     action = Apparition;
                     break;
                 case "Good"://善
                     var Good = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Good.Status = new STGood() { Count = intValue };
+                    Good.Status = new STGood() { Count = cardValue.IntValue };
                     action = Good;
                     break;
                 case "Evil"://恶
                     var Evil = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Evil.Status = new STEvil() { Count = intValue };
+                    Evil.Status = new STEvil() { Count = cardValue.IntValue };
                     action = Evil;
                     break;
                 case "EnergyDrain"://能量吸收
                     var EnergyDrain = actionList.AddAction<ATAddStatus>(actionName, null);
-                    EnergyDrain.Status = new STEnergyDrain() { Count = intValue };
+                    EnergyDrain.Status = new STEnergyDrain() { Count = cardValue.IntValue };
                     action = EnergyDrain;
                     break;
                 case "Charmed"://诱惑
                     var Charmed = actionList.AddAction<ATAddStatus>(actionName, null);
-                    Charmed.Status = new STCharmed() { Length = intValue };
+                    Charmed.Status = new STCharmed() { Length = cardValue.IntValue };
                     action = Charmed;
                     break;
                 case "Strangled"://绞杀
                     STStrangled sT = new STStrangled
                     {
-                        Count = intValue
+                        Count = cardValue.IntValue
                     };
-                    if(sT.MaxCount < intValue)
-                        sT.MaxCount = intValue;
+                    if(sT.MaxCount < cardValue.IntValue)
+                        sT.MaxCount = cardValue.IntValue;
                     var Strangled = actionList.AddAction<ATAddStatus>(actionName, null);
                     Strangled.Status = sT;
                     Strangled.PreFunc = delegate (DV.Action _action)

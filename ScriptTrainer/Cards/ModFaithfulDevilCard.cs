@@ -33,37 +33,20 @@ namespace ScriptTrainer.Cards
 
 
         #region[IModCard]
-        private Dictionary<string, string> Values = new Dictionary<string, string>();
+        private Dictionary<string, ModCardValue> Values = new Dictionary<string, ModCardValue>();
         private ModCardInfo CardInfo;
-        public void AddValue(string key, object value)
+        public ModCardValue AddValue(string key, object value)
         {
-            Values[key] = value.ToString();
+            Values[key] = new ModCardValue(value);
+            return Values[key];
         }
-        public string GetValue(string key)
+        public ModCardValue GetValue(string key)
         {
-            if (Values.TryGetValue(key, out string value))
+            if (Values.TryGetValue(key, out ModCardValue value))
             {
                 return value;
             }
-            return string.Empty;
-        }
-        public int GetIntValue(string key)
-        {
-            if (Values.TryGetValue(key, out string value))
-            {
-                int.TryParse(value, out int result);
-                return result;
-            }
-            return 0;
-        }
-        public float GetFloatValue(string key)
-        {
-            if (Values.TryGetValue(key, out string value))
-            {
-                float.TryParse(value, out float result);
-                return result;
-            }
-            return 0;
+            return null;
         }
         public DV.Action GetAction(string key)
         {

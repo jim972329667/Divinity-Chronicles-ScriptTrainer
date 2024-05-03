@@ -11,10 +11,8 @@ namespace ScriptTrainer.Cards
     {
         void SetModInfo(ModCardInfo info);
         ModCardInfo GetModInfo();
-        void AddValue(string key, object value);
-        string GetValue(string key);
-        int GetIntValue(string key);
-        float GetFloatValue(string key);
+        ModCardValue AddValue(string key, object value);
+        ModCardValue GetValue(string key);
         List<string> GetValueKeys();
         DV.Action GetAction(string key);
         void SetActionActive(string key, bool active);
@@ -31,58 +29,91 @@ namespace ScriptTrainer.Cards
             {
                 var newkey = ukey.Replace(UpgradeAdditon, "");
 
-                float uf = card.GetFloatValue(ukey);
-                int ui = card.GetIntValue(ukey);
-
-                float of = card.GetFloatValue(newkey);
-                int oi = card.GetIntValue(newkey);
+                var uValue = card.GetValue(ukey);
+                var oValue = card.GetValue(newkey);
 
                 ATCombat value2 = (ATCombat)card.GetAction(newkey);
-                if (!string.IsNullOrEmpty(card.GetValue(newkey)))
+                if (oValue != null)
                 {
                     if (newkey.StartsWith("F:"))
                     {
                         if (Upgrade)
-                            card.AddValue(newkey, $"{of + uf}");
+                            card.AddValue(newkey, oValue.FloatValue + uValue.FloatValue);
                         else
-                            card.AddValue(newkey, $"{of - uf}");
+                            card.AddValue(newkey, oValue.FloatValue - uValue.FloatValue);
                     }
                     else
                     {
                         if (Upgrade)
-                            card.AddValue(newkey, $"{oi + ui}");
+                            card.AddValue(newkey, oValue.IntValue + uValue.IntValue);
                         else
-                            card.AddValue(newkey, $"{oi - ui}");
+                            card.AddValue(newkey, oValue.IntValue - uValue.IntValue);
                     }
                 }
                 else if(value2 != null)
                 {
-                    if(value2 is ATAttack aT)
+                    if (uValue.StringValue.ToLower() == "false")
                     {
-                        if (Upgrade)
-                        {
-                            aT.Damage += ui;
-                        }
-                        else
-                        {
-                            aT.Damage -= ui;
-                        }
+                        value2.ConditionFunc = ((DV.Action _addPotions) => false);
                     }
-                    else if(value2 is ATBlock aTBlock)
+                    else if (uValue.StringValue.ToLower() == "true")
                     {
-                        if (Upgrade)
+                        value2.ConditionFunc = null;
+                    }
+                    else
+                    {
+                        if (value2 is ATAttack)
                         {
-                            aTBlock.BlockValue += ui;
+                            value2.ChangeModCardUpgradeProperty("Damage", uValue, Upgrade);
                         }
-                        else
+                        else if (value2 is ATBlock)
                         {
-                            aTBlock.BlockValue -= ui;
+                            value2.ChangeModCardUpgradeProperty("BlockValue", uValue, Upgrade);
+                        }
+                        else if (value2 is ATDrawCards cards)
+                        {
+                            value2.ChangeModCardUpgradeProperty("Count", uValue, Upgrade);
+                        }
+                        else if (value2 is ATChangeHPs || value2 is ATChangeEnergy)
+                        {
+                            value2.ChangeModCardUpgradeProperty("Change", uValue, Upgrade);
+                        }
+                        else if (value2 is ATAddStatus aTAddStatus)
+                        {
+                            var statu = aTAddStatus.Status;
+
+                            statu.ChangeModCardUpgradeProperty("Count", uValue, Upgrade);
+                            statu.ChangeModCardUpgradeProperty("Length", uValue, Upgrade);
+                            statu.ChangeModCardUpgradeProperty("MaxCount", uValue, Upgrade);
+                            statu.ChangeModCardUpgradeProperty("Cap", uValue, Upgrade);
                         }
                     }
                 }
                 else
                 {
                     Debug.LogWarning($"{ukey}:卡牌升级失败，没有获取到{newkey}参数！");
+                }
+            }
+        }
+        public static void ChangeModCardUpgradeProperty(this object obj, string property, ModCardValue value, bool upgrade)
+        {
+            var CountInfo = obj.GetType().GetProperty(property);
+            if (CountInfo != null)
+            {
+                var countValue = CountInfo.GetValue(obj);
+                if (countValue.GetType() == typeof(int))
+                {
+                    if (upgrade)
+                        CountInfo.SetValue(obj, (int)countValue + value.IntValue);
+                    else
+                        CountInfo.SetValue(obj, (int)countValue - value.IntValue);
+                }
+                else if (countValue.GetType() == typeof(float))
+                {
+                    if (upgrade)
+                        CountInfo.SetValue(obj, (float)countValue + value.FloatValue);
+                    else
+                        CountInfo.SetValue(obj, (float)countValue - value.FloatValue);
                 }
             }
         }

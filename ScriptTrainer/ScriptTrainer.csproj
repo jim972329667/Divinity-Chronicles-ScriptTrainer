@@ -116,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cards\ModCardInfo.cs" />
+    <Compile Include="Cards\ModCardValue.cs" />
     <Compile Include="Cards\ModFaithfulDevilCard.cs" />
     <Compile Include="Cards\ModNeutralCard.cs" />
     <Compile Include="Cards\ModSwineKingCard.cs" />

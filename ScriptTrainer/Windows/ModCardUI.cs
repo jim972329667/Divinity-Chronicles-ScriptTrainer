@@ -559,16 +559,16 @@ namespace ScriptTrainer.Windows
             {
                 int index = CardMods.IndexOf(Modle);
                 if (CardModsActions[Modle.name].Count < 4)
-                    CardModsActions[Modle.name].Add(text);
+                    CardModsActions[Modle.name].Add(text.Trim());
                 else
-                    CardModsActions[Modle.name][3] = text;
+                    CardModsActions[Modle.name][3] = text.Trim();
                 ChangeCardActions();
             });
             Modle.transform.Find("ModValueInputField").GetComponent<InputField>().text = Value;
             Modle.transform.Find("ModValueInputField").GetComponent<InputField>().onValueChanged.AddListener((string text) =>
             {
                 int index = CardMods.IndexOf(Modle);
-                CardModsActions[Modle.name][1] = text;
+                CardModsActions[Modle.name][1] = text.Trim();
                 ChangeCardActions();
             });
 
