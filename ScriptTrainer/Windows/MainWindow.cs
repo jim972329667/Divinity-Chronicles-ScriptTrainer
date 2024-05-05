@@ -389,39 +389,39 @@ namespace ScriptTrainer
                     {
                         Scripts.ZeroEnergyCost(state);
                     });
-                    AddButton("测试卡牌", BasicScripts, () =>
-                    {
-                        ModCardInfo modCard = new ModCardInfo
-                        {
-                            CardRarity = Rarity.RARE,
-                            CardName = "ZG_Test_card",
-                            CardImageAssetPath = "@external_3227332234:Data/Cards/card.jpg",
-                            CardType = "JTW.Wukong",
-                            CardCombatType = CombatAction.CombatActionType.ATTACK,
-                            CardEnergyCost = 0,
-                            CardDisplayName = "悟空测试1",
-                            CardTargetType = CombatAction.ActionTargetType.ENEMY_SINGLE,
-                            Actions = { "Attack;10;ENEMY_SINGLE;10", "Strangled;10;ENEMY_ALL" }
-                        };
-                        ModCardInfo modCard2 = new ModCardInfo
-                        {
-                            CardRarity = Rarity.RARE,
-                            CardName = "ZG_Test_card2",
-                            CardImageAssetPath = "@external_3227332234:Data/Cards/card.jpg",
-                            CardType = "JTW.Wukong",
-                            CardCombatType = CombatAction.CombatActionType.SKILL,
-                            CardEnergyCost = 0,
-                            CardDisplayName = "悟空测试2",
-                            CardTargetType = CombatAction.ActionTargetType.ENEMY_SINGLE
-                        };
-                        Debug.Log(modCard.CardTargetType.ToString());
-                        modCard.SaveToFile("E:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\1449070\\3227332234\\Data\\card1.data");
-                    });
-                    AddButton("测试卡牌2", BasicScripts, () =>
-                    {
-                        ModCardInfo modCard =  ModCardInfo.ReadFromFile("E:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\1449070\\3227332234\\Data\\card1.data");
-                        DynamicCardCreator.AppendCardToGame(modCard);
-                    });
+                    //AddButton("测试卡牌", BasicScripts, () =>
+                    //{
+                    //    ModCardInfo modCard = new ModCardInfo
+                    //    {
+                    //        CardRarity = Rarity.RARE,
+                    //        CardName = "ZG_Test_card",
+                    //        CardImageAssetPath = "@external_3227332234:Data/Cards/card.jpg",
+                    //        CardType = "JTW.Wukong",
+                    //        CardCombatType = CombatAction.CombatActionType.ATTACK,
+                    //        CardEnergyCost = 0,
+                    //        CardDisplayName = "悟空测试1",
+                    //        CardTargetType = CombatAction.ActionTargetType.ENEMY_SINGLE,
+                    //        Actions = { "Attack;10;ENEMY_SINGLE;10", "Strangled;10;ENEMY_ALL" }
+                    //    };
+                    //    ModCardInfo modCard2 = new ModCardInfo
+                    //    {
+                    //        CardRarity = Rarity.RARE,
+                    //        CardName = "ZG_Test_card2",
+                    //        CardImageAssetPath = "@external_3227332234:Data/Cards/card.jpg",
+                    //        CardType = "JTW.Wukong",
+                    //        CardCombatType = CombatAction.CombatActionType.SKILL,
+                    //        CardEnergyCost = 0,
+                    //        CardDisplayName = "悟空测试2",
+                    //        CardTargetType = CombatAction.ActionTargetType.ENEMY_SINGLE
+                    //    };
+                    //    Debug.Log(modCard.CardTargetType.ToString());
+                    //    modCard.SaveToFile("E:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\1449070\\3227332234\\Data\\card1.data");
+                    //});
+                    //AddButton("测试卡牌2", BasicScripts, () =>
+                    //{
+                    //    ModCardInfo modCard =  ModCardInfo.ReadFromFile("E:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\1449070\\3227332234\\Data\\card1.data");
+                    //    DynamicCardCreator.AppendCardToGame(modCard);
+                    //});
                     hr();
                     AddH3("卡牌附魔", BasicScripts);
                     AddButton("附魔卡牌", BasicScripts, () =>
