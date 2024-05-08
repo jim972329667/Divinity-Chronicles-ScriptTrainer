@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using static UnityEngine.UI.Image;
 using Random = UnityEngine.Random;
@@ -171,6 +172,8 @@ namespace ScriptTrainer
 
             }
         }
+
+
         [HarmonyPatch(typeof(CardSet), "GenerateCards")]
         public class CardSetOverridePatch_GenerateCards
         {
@@ -220,5 +223,23 @@ namespace ScriptTrainer
                 gameObject.transform.SetSiblingIndex(2);
             }
         }
+
+
+        [HarmonyPatch]
+        public class SettingsMenuComponent_Patch
+        {
+            public static IEnumerable<MethodBase> TargetMethods()
+            {
+                yield return AccessTools.Method(typeof(SettingsMenuComponent), "UpdateMenu");
+                yield return AccessTools.Method(typeof(SettingsMenuComponent), "UpdateMenuForEntranceScene");
+            }
+            [HarmonyPostfix]
+            public static void Postfix(SettingsMenuComponent __instance)
+            {
+                __instance.InsertButton(2, $"修改器快捷键：{ScriptTrainer.ShowTrainer}", new UnityAction(ScriptTrainer.Instance.UpdateKeyCode));
+                ScriptTrainer.Instance.SetSettingButton(__instance.gameObject.transform.Find("MainMenu/ChoiceMenu").GetChild(2).gameObject);
+            }
+        }
+
     }
 }

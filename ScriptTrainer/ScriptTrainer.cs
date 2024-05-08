@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ScriptTrainer
 {
@@ -25,11 +27,21 @@ namespace ScriptTrainer
                 return card;
             }
         }
-        
+        public static string SettingFilePath
+        {
+            get
+            {
+                var dir = new DirectoryInfo(Path.GetDirectoryName(typeof(ScriptTrainer).Assembly.Location));
+                var card = Path.Combine(dir.Parent.FullName, "Setting.ini");
+                return card;
+            }
+        }
 
         public static ScriptTrainer Instance;
         public static AssetBundle Asset;
         public static GameObject CardUI = null;
+        public static KeyCode ShowTrainer = KeyCode.F9;
+        
         // 窗口相关
         public GameObject YourTrainer;
         // 启动按
@@ -37,6 +49,7 @@ namespace ScriptTrainer
         {
             Instance = this;
             #region[注入游戏补丁]
+            LoadSetting();
             var harmony = new Harmony("ScriptTrainer");
             harmony.PatchAll();
             #endregion
@@ -52,6 +65,7 @@ namespace ScriptTrainer
             }
             else YourTrainer.AddComponent<ZGGameObject>();
             #endregion
+
             Debug.Log("脚本已启动");
         }
 
@@ -78,133 +92,36 @@ namespace ScriptTrainer
         }
         public void Update()
         {
-            //if (Input.GetKeyDown(KeyCode.F8))
-            //{
-            //    IEnumerable<Type> enumerable = from t in Assembly.GetAssembly(typeof(ATCombat)).GetTypes()
-            //                                   where t.IsSubclassOf(typeof(ATCombat))
-            //                                   select t;
-            //    foreach (Type type in enumerable)
-            //    {
-            //        try
-            //        {
-            //            if (!type.IsAbstract && !(type.GetConstructor(Type.EmptyTypes) == null))
-            //            {
-            //                ATCombat card = (ATCombat)Activator.CreateInstance(type);
-            //                Debug.Log($"{type}:{card.GetDescription().Text}");
-            //            }
-            //        }
-            //        catch 
-            //        {
-                        
-            //        }
-            //    }
-            //}
-            //if (Input.GetKeyDown(KeyCode.F6))
-            //{
-            //    IEnumerable<Type> enumerable = from t in Assembly.GetAssembly(typeof(Status)).GetTypes()
-            //                                   where t.IsSubclassOf(typeof(STTurnBased)) || t.IsSubclassOf(typeof(STWithCount))
-            //                                   select t;
-            //    foreach (Type type in enumerable)
-            //    {
-            //        try
-            //        {
-            //            if (!type.IsAbstract && !(type.GetConstructor(Type.EmptyTypes) == null))
-            //            {
-            //                Status card = (Status)Activator.CreateInstance(type);
-            //                Debug.Log($"{type}:{card.GetDescription(true, true)}");
-            //            }
-            //        }
-            //        catch
-            //        {
-
-            //        }
-            //    }
-            //}
-            //if (Input.GetKeyDown(KeyCode.F5))
-            //{
-            //    List<string> strings = new List<string>();
-            //    IEnumerable<Type> enumerable = from t in Assembly.GetAssembly(typeof(Status)).GetTypes()
-            //                                   where t.IsSubclassOf(typeof(Status))
-            //                                   select t;
-            //    foreach (Type type in enumerable)
-            //    {
-            //        try
-            //        {
-            //            if (!type.IsAbstract && !(type.GetConstructor(Type.EmptyTypes) == null))
-            //            {
-            //                Status card = (Status)Activator.CreateInstance(type);
-            //                string text = "";
-            //                if (type.IsSubclassOf(typeof(STTurnBased)))
-            //                {
-            //                    text = $"{type}:STTurnBased:{card.GetDescription(true, true).Replace("\n", "").Replace("\r", "")}";
-            //                }
-            //                else if (type.IsSubclassOf(typeof(STWithCount)))
-            //                {
-            //                    text = $"{type}:STWithCount:{card.GetDescription(true, true).Replace("\n", "").Replace("\r", "")}";
-            //                }
-            //                else
-            //                {
-            //                    text = $"{type}:{type.BaseType}:{card.GetDescription(true, true).Replace("\n", "").Replace("\r", "")}";
-            //                }
-            //                strings.Add(text);
-            //                Debug.Log($"{type}:{card.GetDescription(true, true).Replace("\n","").Replace("\r","")}");
-            //            }
-            //        }
-            //        catch
-            //        {
-
-            //        }
-            //    }
-            //    File.WriteAllLines("F:\\Status.txt", strings);
-            //}
-            //if (Input.GetKeyDown(KeyCode.F4))
-            //{
-            //    List<string> values = new List<string>();
-            //    List<string> values2 = new List<string>();
-            //    IEnumerable<Type> enumerable = from t in Assembly.GetAssembly(typeof(CombatAction)).GetTypes()
-            //                                   where t.IsSubclassOf(typeof(CombatAction))
-            //                                   select t;
-            //    foreach (Type type in enumerable)
-            //    {
-            //        try
-            //        {
-            //            if (!type.IsAbstract && !(type.GetConstructor(Type.EmptyTypes) == null))
-            //            {
-            //                CombatAction action = (CombatAction)Activator.CreateInstance(type);
-                            
-            //                foreach(var x in action.ActionInternal.GetActions())
-            //                {
-            //                    if (x is ATAnimation x2)
-            //                    {
-            //                        if (!values.Contains(x2.AnimationName))
-            //                        {
-            //                            values.Add(x2.AnimationName);
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        if (!values2.Contains(x.GetType().ToString()))
-            //                        {
-            //                            values2.Add(x.GetType().ToString());
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        catch
-            //        {
-
-            //        }
-            //    }
-
-            //    Debug.Log("ATAnimation : " + string.Join(";", values));
-            //    Debug.Log("Actions : " + string.Join(";", values2));
-            //}
+            
         }
         public void FixedUpdate()
         {
         }
-
+        public void UpdateKeyCode()
+        {
+            var obj = YourTrainer.GetComponent<ZGGameObject>();
+            if (obj.SettingButton != null)
+            {
+                obj.SettingButton.GetComponentInChildren<TextMeshProUGUI>().text = $"等待按键输入";
+                obj.CheckShowButton = true;
+            }
+        }
+        public void SetSettingButton(GameObject obj)
+        {
+            YourTrainer.GetComponent<ZGGameObject>().SettingButton = obj;
+        }
+        public void SaveSettings()
+        {
+            File.WriteAllText(SettingFilePath, ShowTrainer.ToString());
+        }
+        public void LoadSetting()
+        {
+            if(File.Exists(SettingFilePath))
+            {
+                string t = File.ReadAllText(SettingFilePath).Trim();
+                Enum.TryParse<KeyCode>(t, out ShowTrainer);
+            }
+        }
         public void OnDestroy()
         {
             // 移除 MainWindow.testAssetBundle 加载时的资源
@@ -216,6 +133,8 @@ namespace ScriptTrainer
     {
         public MainWindow mw;
         public bool LoadEntranceSceneController = false;
+        public GameObject SettingButton = null;
+        public bool CheckShowButton = false;
         public void Start()
         {
             mw = new MainWindow();
@@ -226,7 +145,7 @@ namespace ScriptTrainer
             {
                 MainWindow.Initialize();
             }
-            if (Input.GetKeyDown(KeyCode.F9))
+            if (Input.GetKeyDown(ScriptTrainer.ShowTrainer))
             {
                 if (!MainWindow.initialized)
                 {
@@ -236,6 +155,24 @@ namespace ScriptTrainer
                 MainWindow.optionToggle = !MainWindow.optionToggle;
                 MainWindow.canvas.SetActive(MainWindow.optionToggle);
                 Event.current.Use();
+            }
+            if (SettingButton != null && CheckShowButton)
+            {
+                foreach (KeyCode keycode in Enum.GetValues(typeof(KeyCode)))
+                {
+                    //Debug.Log($"检测KeyCode : {keycode}");
+                    if (Input.GetKeyDown(keycode))
+                    {
+                        if (keycode != ScriptTrainer.ShowTrainer)
+                        {
+                            ScriptTrainer.ShowTrainer = keycode;
+                            ScriptTrainer.Instance.SaveSettings();
+                            SettingButton.GetComponentInChildren<TextMeshProUGUI>().text = $"修改器快捷键：{ScriptTrainer.ShowTrainer}";
+                        }
+                        CheckShowButton = false;
+                        break;
+                    }
+                }
             }
         }
     }
